@@ -30,25 +30,18 @@ class Bsxfun
         if (!is_array($a)) {
             return $f($a, $b);
         }
+        $a = self::expandIfSingleton($a, count($b));
+        $b = self::expandIfSingleton($b, count($a));
+        return array_map(function ($a, $b) use ($f) {
+            return self::bsxfunRec($f, $a, $b);
+        }, $a, $b);
+    }
 
-        if (count($a) == count($b)) {
-            return array_map(function ($a, $b) use ($f) {
-                return self::bsxfunRec($f, $a, $b);
-            }, $a, $b);
-        }
-
+    private static function expandIfSingleton($a, $n)
+    {
         if (count($a) == 1) {
-            return array_map(function ($b) use ($f, $a) {
-                return self::bsxfunRec($f, $a[0], $b);
-            }, $b);
+            return array_fill(0, $n, $a[0]);
         }
-
-        if (count($b) == 1) {
-            return array_map(function ($a) use ($f, $b) {
-                return self::bsxfunRec($f, $a, $b[0]);
-            }, $a);
-        }
-
-        return 0;
+        return $a;
     }
 }
